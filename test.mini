@@ -1,0 +1,5 @@
+test(x) {
+	print x;
+	test = 255;
+	return 0;
+}

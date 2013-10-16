@@ -681,10 +681,10 @@ class BinCode {
 			OpCode oc = OpCode.fromInt(code[i]);
 			if (oc.hasArg())
 				System.out.println(String.format(
-						"%04d  %02d %02d  %-12s%-6d%s", i, code[i],
+						"%04x  %02x %02x  %-12s%-6d%s", i, code[i],
 						code[i + 1], oc.toString(), code[++i], oc.getDesc()));
 			else
-				System.out.println(String.format("%04d  %02d     %-18s%s", i,
+				System.out.println(String.format("%04x  %02x     %-18s%s", i,
 						code[i], oc.toString(), oc.getDesc()));
 		}
 
