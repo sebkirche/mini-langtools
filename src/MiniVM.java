@@ -24,7 +24,7 @@ Statement  = identifier "=" Expression ";" |
              "if" Condition Statement "else" Statement |
              "while" Condition Statement |
              "return" Expression ";" |
-             "print" Expression ";"
+             "print" Expression ";" |
              Block |
              ";"
 Condition  = "(" Expression ("=="|"!="|">"|"<") Expression ")"
@@ -80,8 +80,6 @@ Result: 40320
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 
 /**
  *	Demonstrate the Mini VM by loading a script then execute it 
