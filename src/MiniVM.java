@@ -24,7 +24,7 @@ Statement  = identifier "=" Expression ";" |
              "if" Condition Statement "else" Statement |
              "while" Condition Statement |
              "return" Expression ";" |
-             "print" Factor ";"
+             "print" Expression ";"
              Block |
              ";"
 Condition  = "(" Expression ("=="|"!="|">"|"<") Expression ")"
@@ -424,7 +424,7 @@ class Parser {
 		match(Token.T_id);
 		match(Token.T_rbr);
 		block();
-		bin.instr(OpCode.M_nop);
+		//bin.instr(OpCode.M_nop); //TODO: why ??
 	}
 
 	private void block() throws Error {

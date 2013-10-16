@@ -1,5 +1,6 @@
 test(n) {
 	valeur = n;
-	print 42 + 1;
+	valeur = valeur + 1;
+	print valeur * valeur;
 	return valeur;
 }
