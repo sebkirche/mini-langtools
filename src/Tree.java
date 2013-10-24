@@ -16,10 +16,37 @@ public class Tree<T> {
 		
 		t2.getRoot().addChild(new TreeNode<String>("sub1"));
 		TreeNode<String> t3 = new TreeNode<String>("sub2");
-		t3.addChild(new TreeNode<String>("subsub1"));
+		t3.addChild(new TreeNode<String>("ssub1"));
+		//t3.addChild(new TreeNode<String>("ssub2"));
+		TreeNode<String> t4 = new TreeNode<String>("ssub3"); 
+		t3.addChild(t4);
+		t3.addChild(new TreeNode<String>("ssub4"));
+		t3.addChild(new TreeNode<String>("ssub5"));
 		t2.getRoot().addChild(t3);
+		
+		t4.addChild(new TreeNode<String>("x42"));
+		TreeNode<String> t5 = new TreeNode<String>("sub3");
+		t2.getRoot().getChildAt(0).addChild(t5);
+		t2.getRoot().getChildAt(0).addChild(new TreeNode<String>("another"));
+				
+		t3.getChildAt(0).addChild(new TreeNode<String>("x1"));
+		t3.getChildAt(0).addChild(new TreeNode<String>("x2"));
+		
 		System.out.println("depth = " + t2.getRoot().getDepth());
+		
+		//for(String s : t3.prettyPrint())
+		//	System.out.println(s);		
+		
 		System.out.println(t2.prettyPrint());
+		
+		TreeNode<String> ex = new TreeNode<String>("=");
+		ex.addChild(new TreeNode<String>("+"));
+		ex.getChildAt(0).addChild(new TreeNode<String>("2"));
+		ex.getChildAt(0).addChild(new TreeNode<String>("*"));
+		ex.getChildAt(0).getChildAt(1).addChild(new TreeNode<String>("3"));
+		ex.getChildAt(0).getChildAt(1).addChild(new TreeNode<String>("4"));
+		for(String s : ex.prettyPrint())
+			System.out.println(s);
 	}
 	
 	public boolean isEmpty(){
@@ -29,8 +56,15 @@ public class Tree<T> {
 	private String prettyPrint() {
 		if (isEmpty())
 			return "";
-		else 
-			return root.prettyPrint();
+		else{
+			StringBuilder sb = new StringBuilder();
+			for(String s : root.prettyPrint()){
+				sb.append(s);
+				sb.append("\n");
+			}				
+			return sb.toString();	
+		}
+		
 	}
 
 	Tree(){
