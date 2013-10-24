@@ -133,7 +133,7 @@ public class TreeNode<T> {
 
 					//connector sign for parent
 					if(childs.size() % 2 == 0)
-						sb.setCharAt(sb.length()/2, '+');
+						sb.setCharAt(sb.length()/2, '^');
 					
 					ls.add(sb.toString());
 			}

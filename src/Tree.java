@@ -15,6 +15,11 @@ public class Tree<T> {
 		System.out.println(t2.prettyPrint());
 		
 		t2.getRoot().addChild(new TreeNode<String>("sub1"));
+		
+		t2.getRoot().addChild(new TreeNode<String>("inter1"));
+		
+		t2.getRoot().getChildAt(1).addChild(new TreeNode<String>("inter2"));
+		
 		TreeNode<String> t3 = new TreeNode<String>("sub2");
 		t3.addChild(new TreeNode<String>("ssub1"));
 		//t3.addChild(new TreeNode<String>("ssub2"));
@@ -22,7 +27,8 @@ public class Tree<T> {
 		t3.addChild(t4);
 		t3.addChild(new TreeNode<String>("ssub4"));
 		t3.addChild(new TreeNode<String>("ssub5"));
-		t2.getRoot().addChild(t3);
+		
+		t2.getRoot().getChildAt(1)/*.getChildAt(0)*/.addChild(t3);
 		
 		t4.addChild(new TreeNode<String>("x42"));
 		TreeNode<String> t5 = new TreeNode<String>("sub3");
@@ -79,7 +85,7 @@ public class Tree<T> {
 		return root;
 	}
 	
-	void setRoot(TreeNode<T> tn){
+	public void setRoot(TreeNode<T> tn){
 		root = tn;
 	}
 	
