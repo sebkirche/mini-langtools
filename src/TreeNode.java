@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.lang.Math;
 
 public class TreeNode<T> {
 
-	protected List<TreeNode<T>> childs;
+	protected List<TreeNode<T>> children;
+	protected TreeNode<T> parent;
 	protected T data;
 
 	/**
@@ -12,7 +14,8 @@ public class TreeNode<T> {
 	 */
 	TreeNode(){
 		data = null;
-		childs = new ArrayList<TreeNode<T>>();
+		parent = null;
+		children = new ArrayList<TreeNode<T>>();
 	}
 	
 	/**
@@ -21,7 +24,8 @@ public class TreeNode<T> {
 	 */
 	TreeNode(T data){
 		this.data = data;
-		childs = new ArrayList<TreeNode<T>>();
+		parent = null;
+		children = new ArrayList<TreeNode<T>>();
 	}
 	
 	/**
@@ -40,24 +44,63 @@ public class TreeNode<T> {
 		data = val;
 	}
 	
+	/**
+	 * Getter for parent node
+	 * @return the parent (if any) 
+	 */
+	public TreeNode<T> getParent(){
+		return parent;
+	}
+	
+	/**
+	 * Setter for the parent node
+	 * @param tn the node that became the parent
+	 */
+	void setParent(TreeNode<T> tn){
+		this.parent = tn;
+	}
+	
 	/** 
 	 * add a child to a node 
 	 * @param tn a single node to add as a child
 	 */
 	void addChild(TreeNode<T> tn){
-		childs.add(tn);
+		children.add(tn);
+		tn.setParent(this);
 	}
 	
 	/**
 	 * setter for the childs at once
-	 * @param newChilds a list of childs
+	 * @param newChildren a list of childs
 	 */
-	void setChilds(List<TreeNode<T>> newChilds){
-		childs = newChilds;
+	void setChildren(List<TreeNode<T>> newChildren){
+		children = newChildren;
+		for(TreeNode<T> tn : children)
+			tn.setParent(this);
 	}
 	
 	TreeNode<T> getChildAt(int index){
-		return childs.get(index);
+		return children.get(index);
+	}
+	
+	List<TreeNode<T>> getChildren(){
+		return children;
+	}
+	
+	/**
+	 * remove a child
+	 * @param index to delete
+	 * @return the removed child
+	 */
+	TreeNode<T> removeChildAt(int index){
+		return children.remove(index);
+	}
+	
+	/**
+	 * Delete all the children
+	 */
+	void removeChildren(){
+		children.clear();
 	}
 	
 	/**
@@ -85,22 +128,22 @@ public class TreeNode<T> {
  	 * and a node has the witdh of the max value between
  	 * its own label and the cumulated width of each child 
 	 */
-	public List<String> prettyPrint(){
+	public String[] toPrettifiedStrings(){
 		List<String> ls = new ArrayList<String>();
 		String head = toString();
 
-		if(childs.size() > 0){
+		if(children.size() > 0){
 			int maxd = 0, d;
 			int totalwidth = 0;
 			
 			//get the highest node 
 			// + the max width for formating head 
-			for(int i=0; i < childs.size(); i++){
-				d = childs.get(i).getDepth();
+			for(int i=0; i < children.size(); i++){
+				d = children.get(i).getDepth();
 				if(d > maxd)
 					maxd = d;
-				totalwidth += childs.get(i).prettyfiedWidth();
-				if(i < childs.size()-1)
+				totalwidth += children.get(i).prettyfiedWidth();
+				if(i < children.size()-1)
 					totalwidth++; //take separator into account
 			}
 			
@@ -113,49 +156,44 @@ public class TreeNode<T> {
 				ls.add(head);
 						
 			//build the connectors
-			switch(childs.size()){
-				case 1:
-					ls.add(center("|",Math.max(totalwidth, head.length())));
-					break;
-				case 2:
-					ls.add(center("/ \\",Math.max(totalwidth, head.length())));
-					break;
-				default:
-					StringBuilder sb = new StringBuilder();
-					{//semi connector for first child
-						int leftPadding = (childs.get(0).prettyfiedWidth() - 1 /*for '+' */) / 2;
-						for(int n=0; n<leftPadding; n++)
-							sb.append(" ");
-						sb.append('+');
-						int rightPadding = childs.get(0).prettyfiedWidth() - leftPadding;
-						for(int n=0; n<rightPadding; n++)
-							sb.append('-');
-					}
-					//connectors for intermediate childs
-					for(int x=1; x<childs.size()-1; x++)
-						for(int y=0; y<childs.get(x).prettyfiedWidth()+1; y++)
-							sb.append('-');
-					{//semi connector for last child
-						int leftPadding = childs.get(childs.size()-1).prettyfiedWidth() / 2;
-						for(int n=0; n<leftPadding; n++)
-							sb.append("-");
-						sb.append('+');
-						int rightPadding = childs.get(childs.size()-1).prettyfiedWidth() - 1 /*for '+' */ - leftPadding;
-						for(int n=0; n<rightPadding; n++)
-							sb.append(' ');
-					}
-					//connector sign for middle of childs
-					int p = childs.get(0).prettyfiedWidth();
-					for(int x=1; x<childs.size()-1; x++){
-						sb.setCharAt(p + childs.get(x).prettyfiedWidth() / 2 + 1, '+');
-						p += childs.get(x).prettyfiedWidth() + 1;
-					}
+			if(children.size() == 1){
+				ls.add(center("|",Math.max(totalwidth, head.length())));
+			} else {
+				StringBuilder sb = new StringBuilder();
+				{//semi connector for first child
+					int leftPadding = (children.get(0).prettyfiedWidth() - 1 /*for '+' */) / 2;
+					for(int n=0; n<leftPadding; n++)
+						sb.append(" ");
+					sb.append('+');
+					int rightPadding = children.get(0).prettyfiedWidth() - leftPadding;
+					for(int n=0; n<rightPadding; n++)
+						sb.append('-');
+				}
+				//connectors for intermediate childs
+				for(int x=1; x<children.size()-1; x++)
+					for(int y=0; y<children.get(x).prettyfiedWidth()+1; y++)
+						sb.append('-');
+				{//semi connector for last child
+					int leftPadding = children.get(children.size()-1).prettyfiedWidth() / 2;
+					for(int n=0; n<leftPadding; n++)
+						sb.append("-");
+					sb.append('+');
+					int rightPadding = children.get(children.size()-1).prettyfiedWidth() - 1 /*for '+' */ - leftPadding;
+					for(int n=0; n<rightPadding; n++)
+						sb.append(' ');
+				}
+				//connector sign for middle of childs
+				int p = children.get(0).prettyfiedWidth();
+				for(int x=1; x<children.size()-1; x++){
+					sb.setCharAt(p + children.get(x).prettyfiedWidth() / 2 + 1, '+');
+					p += children.get(x).prettyfiedWidth() + 1;
+				}
 
-					//connector sign for parent
-					if(childs.size() % 2 == 0)
-						sb.setCharAt(sb.length()/2, '^');
-					
-					ls.add(sb.toString());
+				//connector sign for parent
+				if(children.size() % 2 == 0)
+					sb.setCharAt(sb.length()/2, '^');
+				
+				ls.add(sb.toString());
 			}
 			//the height of a child is 2 lines per depth minus 1 
 			for(int level=0; level<maxd*2-1; level++){
@@ -163,17 +201,17 @@ public class TreeNode<T> {
 				//for each line until the height of the greatest child,
 				//and for each child
 				//put the child content or an empty line
-				for(int i=0; i<childs.size(); i++){
-					TreeNode<T> curNode = childs.get(i);
-					List<String> prettifiedNode = curNode.prettyPrint();
-					if(level < prettifiedNode.size()){
-						sb.append(String.format("%"+curNode.prettyfiedWidth()+"s", prettifiedNode.get(level)));
+				for(int i=0; i<children.size(); i++){
+					TreeNode<T> curNode = children.get(i);
+					String[] prettifiedNode = curNode.toPrettifiedStrings();
+					if(level < prettifiedNode.length){
+						sb.append(String.format("%"+curNode.prettyfiedWidth()+"s", prettifiedNode[level]));
 					}
 					else{
-						for(int c=0; c<prettifiedNode.get(0).length(); c++)
+						for(int c=0; c<prettifiedNode[0].length(); c++)
 							sb.append(" ");
 					}
-					if(i<childs.size()-1)
+					if(i<children.size()-1)
 						sb.append(" ");
 				}
 				ls.add(sb.toString());
@@ -182,7 +220,7 @@ public class TreeNode<T> {
 		else
 			ls.add(head);
 		
-		return ls;
+		return ls.toArray(new String[ls.size()]); //convert the list to an array
 	}
 	
 	public String center (String s, int length) {
@@ -218,10 +256,10 @@ public class TreeNode<T> {
 		//FIXME: too many calls to this function, need some memoize
 		int w = toString().length();
 		int c = 0;
-		for(TreeNode<T> tn : childs){
+		for(TreeNode<T> tn : children){
 			c += tn.prettyfiedWidth();
 		}
-		c += childs.size() - 1; //add spaces separators
+		c += children.size() - 1; //add spaces separators
 		return w > c ? w : c;
 	}
 
@@ -230,7 +268,7 @@ public class TreeNode<T> {
 	 */
 	public int getDepth(){
 		int depth = 0, nodedepth;
-		for(TreeNode<T> tn : childs){
+		for(TreeNode<T> tn : children){
 			nodedepth = tn.getDepth(); 
 			if(nodedepth > depth)
 				depth = nodedepth; 
@@ -244,8 +282,20 @@ public class TreeNode<T> {
 	 */
 	public int getNumberOfNodes() {
 		int nodesCount = 1;
-		for(TreeNode<T> tn : childs)
+		for(TreeNode<T> tn : children)
 			nodesCount += tn.getNumberOfNodes();
 		return nodesCount;
+	}
+	
+	/**
+	 * if 2 TreeNode have same data, the 2 TreeNode are equal
+	 */
+	public boolean equals(Object obj){
+		if(obj==null)
+			return false;
+		if(obj instanceof TreeNode)
+			if(((TreeNode<?>)obj).getData().equals(this.data))
+				return true;
+		return false;
 	}
 }
