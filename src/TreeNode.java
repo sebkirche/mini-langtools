@@ -62,7 +62,28 @@ public class TreeNode<T> {
 	
 	/**
 	 * Return a prettified representation of a Node 
-	 * and its childs (if any)
+	 * and its children (if any)
+	 * 
+	 * @return a list of formatted strings
+	 * 
+	 * <p>
+	 * The general structure is
+	 * <pre>
+	 * +-----------------------------+
+	 * |     Title (current node)    |
+	 * +-----------------------------+ 
+	 * |        Connector zone       | \
+	 * +---------+---------+---------+  |
+	 * |         |         | child n |  | This part is only generated 
+	 * | child 1 |         |---------+  | if there are some children.
+     * |         | child 2 |            | Notice that children can have 
+ 	 * +---------+         |            | different various heights
+ 	 *           |         |            |
+ 	 *           +---------+           /
+ 	 * </pre>
+ 	 * That structure is recursively repeated
+ 	 * and a node has the witdh of the max value between
+ 	 * its own label and the cumulated width of each child 
 	 */
 	public List<String> prettyPrint(){
 		List<String> ls = new ArrayList<String>();
@@ -82,7 +103,6 @@ public class TreeNode<T> {
 				if(i < childs.size()-1)
 					totalwidth++; //take separator into account
 			}
-			//System.out.println(String.format("totalw for %s = %d", head, totalwidth));
 			
 			//now format each string
 			
@@ -137,8 +157,12 @@ public class TreeNode<T> {
 					
 					ls.add(sb.toString());
 			}
+			//the height of a child is 2 lines per depth minus 1 
 			for(int level=0; level<maxd*2-1; level++){
 				StringBuilder sb = new StringBuilder();
+				//for each line until the height of the greatest child,
+				//and for each child
+				//put the child content or an empty line
 				for(int i=0; i<childs.size(); i++){
 					TreeNode<T> curNode = childs.get(i);
 					List<String> prettifiedNode = curNode.prettyPrint();
