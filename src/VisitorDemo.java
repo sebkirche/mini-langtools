@@ -1,5 +1,5 @@
 
-/** Démonstration de visiteur
+/** DÃ©monstration de visiteur
  * 
  * @author Sebastien
  * @see {@link http://fr.wikibooks.org/wiki/Patrons_de_conception/Visiteur}
@@ -30,7 +30,7 @@ interface CarElementVisitor {
 
 interface CarElement {
 	void accept(CarElementVisitor visitor);
-	// Méthode à définir par les classes implémentant CarElements
+	// MÃ©thode Ã  dÃ©finir par les classes implÃ©mentant CarElements
 }
 
 class Wheel implements CarElement {
@@ -65,7 +65,7 @@ class Car {
 	CarElement[] elements;
 
 	public CarElement[] getElements() {
-		return elements.clone(); // Retourne une copie du tableau de références.
+		return elements.clone(); // Retourne une copie du tableau de rÃ©fÃ©rences.
 	}
 
 	public Car() {
