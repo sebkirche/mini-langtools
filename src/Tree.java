@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Tree<T> {
 
@@ -26,7 +29,7 @@ public class Tree<T> {
 		TreeNode<String> t4 = new TreeNode<String>("ssub3"); 
 		t3.addChild(t4);
 		t3.addChild(new TreeNode<String>("ssub4"));
-		t3.addChild(new TreeNode<String>("ssub5"));
+		//t3.addChild(new TreeNode<String>("ssub5"));
 		
 		t2.getRoot().getChildAt(1)/*.getChildAt(0)*/.addChild(t3);
 		
@@ -44,6 +47,7 @@ public class Tree<T> {
 		//	System.out.println(s);		
 		
 		System.out.println(t2.prettyPrint());
+		System.out.println("Nodes : " + t2.nodesCount());
 		
 		TreeNode<String> ex = new TreeNode<String>("=");
 		ex.addChild(new TreeNode<String>("+"));
@@ -51,8 +55,19 @@ public class Tree<T> {
 		ex.getChildAt(0).addChild(new TreeNode<String>("*"));
 		ex.getChildAt(0).getChildAt(1).addChild(new TreeNode<String>("3"));
 		ex.getChildAt(0).getChildAt(1).addChild(new TreeNode<String>("4"));
-		for(String s : ex.prettyPrint())
+		for(String s : ex.toPrettifiedStrings())
 			System.out.println(s);
+		System.out.println("Nodes : " + ex.getNumberOfNodes());
+		
+		Tree<String> tree = new Tree(ex);
+		System.out.print("Prefix walk  : ");
+		for(TreeNode<String> tn : tree.getTraversalList(OrderTraversal.PREFIX))
+			System.out.print(tn.toString() + " ");
+		System.out.println();
+		System.out.print("Postfix walk : ");
+		for(TreeNode<String> tn : tree.getTraversalList(OrderTraversal.POSTFIX))
+			System.out.print(tn.toString() + " ");
+		System.out.println();
 	}
 	
 	public boolean isEmpty(){
@@ -64,7 +79,7 @@ public class Tree<T> {
 			return "";
 		else{
 			StringBuilder sb = new StringBuilder();
-			for(String s : root.prettyPrint()){
+			for(String s : root.toPrettifiedStrings()){
 				sb.append(s);
 				sb.append("\n");
 			}				
@@ -75,6 +90,10 @@ public class Tree<T> {
 
 	Tree(){
 		
+	}
+	
+	Tree(TreeNode<T> tn){
+		root = tn;
 	}
 	
 	Tree(T data){
@@ -94,6 +113,35 @@ public class Tree<T> {
 			return 0;
 		else
 			return root.getNumberOfNodes();
+	}
+	
+	public enum OrderTraversal{
+		PREFIX, POSTFIX;
+	}
+	
+	List<TreeNode<T>> getTraversalList(OrderTraversal order){
+		List<TreeNode<T>> traversal = new ArrayList<TreeNode<T>>();
+			switch(order){
+			case PREFIX:
+				prefixTraversal(root, traversal);
+				break;
+			case POSTFIX:
+				postfixTraversal(root, traversal);
+				break;			
+			}
+		return traversal;
+	}
+	
+	void prefixTraversal(TreeNode<T> node, List<TreeNode<T>> traversal){
+		traversal.add(node);
+		for(TreeNode<T> tn : node.getChildren())
+			prefixTraversal(tn, traversal);
+	}
+	
+	void postfixTraversal(TreeNode<T> node, List<TreeNode<T>> traversal){
+		for(TreeNode<T> tn : node.getChildren())
+			postfixTraversal(tn, traversal);
+		traversal.add(node);	
 	}
 	
 }

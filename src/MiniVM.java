@@ -1,61 +1,4 @@
-/* =========================== MiniVM.java ===============================
-
-The Mini language is a modified small subset of Java/C. 
-A Mini program consists of a single possibly recursive function.
-The language has no declarations (implicit type is integer).
-
-MiniVM.java is a compiler-interpreter for Mini written in Java.
-The compiler generates code for a virtual machine, which is a modified 
-small subset of the Java VM (integer code instead of byte code).
-
-The one-pass compiler is implemented by a top-down recursive descent
-parser calling the methods of lexical analysis and code generation.
-The parser routines correspond to the grammar rules in EBNF notation.
-The regular right parts of EBNF are suitable to postfix generation.
-Lexical analysis takes advantage of the Java class StreamTokenizer.
-
-====================== source language syntax (EBNF) =====================
-
-Program    = Function
-Function   = identifier "(" identifier ")" Block
-Block      = "{" [Statements] "}"
-Statements = Statement Statements
-Statement  = identifier "=" Expression ";" |
-             "if" Condition Statement "else" Statement |
-             "while" Condition Statement |
-             "return" Expression ";" |
-             "print" Expression ";" |
-             Block |
-             ";"
-Condition  = "(" Expression ("=="|"!="|">"|"<") Expression ")"
-Expression = Term {("+"|"-") Term}
-Term       = Factor {("*"|"/") Factor}
-Factor     = number |
-             identifier |
-             "(" Expression ")" |
-             identifier "(" Expression ")" 
-
-================================ VM code =================================
-
- 0    do nothing
- 1 c  push constant c onto stack
- 2 v  load variable v onto stack 
- 3 v  store stack value into variable v
- 4    add two top elements of stack, replace by result 
- 5    subtract ...
- 6    multiply ...
- 7    divide ...
- 8 a  jump to a if the two top elements of stack are equal
- 9 a  jump if ... not equal
-10 a  jump if ... less or equal
-11 a  jump if ... greater or equal
-12 a  unconditional jump to a
-13 a  jump to subroutine start address a
-14    return from function
-15    stop execution
-16    print variable value
-
-================================ example =================================
+/*================================ example =================================
 
 source file "fac.mini":
 -----------------------
@@ -82,12 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *	Demonstrate the Mini VM by loading a script then execute it 
+	The Mini language is a modified small subset of Java/C. 
+	A Mini program consists of a single possibly recursive function.
+	The language has no declarations (implicit type is integer).
+	
+	MiniVM.java is a compiler-interpreter for Mini written in Java.
+	The compiler generates code for a virtual machine, which is a modified 
+	small subset of the Java VM (integer code instead of byte code).
+	
+	The one-pass compiler is implemented by a top-down recursive descent
+	parser calling the methods of lexical analysis and code generation.
+	The parser routines correspond to the grammar rules in EBNF notation.
+	The regular right parts of EBNF are suitable to postfix generation.
+	Lexical analysis takes advantage of the Java class StreamTokenizer.
+
  */
 public class MiniVM {
 	static int code_max = 1000;
 	static int stack_max = 10000;
 
+	/**
+	 * Demonstrate the Mini VM by loading a script then execute it 
+	 */
 	public static void main(String args[]) {
 		
 		if(args.length == 0){
@@ -127,8 +86,6 @@ class Error extends Exception {
 		super(msg);
 	}
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 /**
  * Lexer Tokens
@@ -249,8 +206,6 @@ enum OpCode
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 /**
  *  naive implementation of a symbol table 
  *  (should be replaced by Dictionary / HashTable)
@@ -283,7 +238,7 @@ class SymTab {
 }
 
 /**
- * lexical analysis
+ * lexical analyzer
  */
 class Lexer {
 	private int num_val;	// attribute of number
@@ -390,10 +345,31 @@ class Lexer {
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 /**
- *  Parser and code emitter
+ *  Parser and code emitter<br>
+ *  
+ *  source language syntax (EBNF):
+<pre>
+Program    = Function
+Function   = identifier "(" identifier ")" Block
+Block      = "{" [Statements] "}"
+Statements = Statement Statements
+Statement  = identifier "=" Expression ";" |
+             "if" Condition Statement "else" Statement |
+             "while" Condition Statement |
+             "return" Expression ";" |
+             "print" Expression ";" |
+             Block |
+             ";"
+Condition  = "(" Expression ("=="|"!="|">"|"<") Expression ")"
+Expression = Term {("+"|"-") Term}
+Term       = Factor {("*"|"/") Factor}
+Factor     = number |
+             identifier |
+             "(" Expression ")" |
+             identifier "(" Expression ")" 
+</pre>
+See the {@link VM} class for the detail on bytecodes
  */
 class Parser {
 	private static Token curToken;
@@ -609,8 +585,6 @@ class Parser {
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 /**
  *  Helper class to store compiled code
  *
@@ -695,7 +669,27 @@ class BinCode {
 /**
  * 
  * virtual machine engine
- * 
+	
+	VM bytecodes:
+<pre>
+ 0    do nothing
+ 1 c  push constant c onto stack
+ 2 v  load variable v onto stack 
+ 3 v  store stack value into variable v
+ 4    add two top elements of stack, replace by result 
+ 5    subtract ...
+ 6    multiply ...
+ 7    divide ...
+ 8 a  jump to a if the two top elements of stack are equal
+ 9 a  jump if ... not equal
+10 a  jump if ... less or equal
+11 a  jump if ... greater or equal
+12 a  unconditional jump to a
+13 a  jump to subroutine start address a
+14    return from function
+15    stop execution
+16    print variable value
+</pre>
 */
 class VM {
 	private int p[]; // program code
